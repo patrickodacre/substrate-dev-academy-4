@@ -130,7 +130,7 @@ pub fn combine_dna(dna1: u8, dna2: u8, selector: u8) -> u8 {
 
 impl<T: Config> Module<T> {
     fn get_next_kitty_id() -> sp_std::result::Result<T::KittyId, DispatchError> {
-        NextKittyId::try_mutate(
+        NextKittyId::<T>::try_mutate(
             |next_id| -> sp_std::result::Result<T::KittyId, DispatchError> {
                 let current_id = *next_id;
                 *next_id = next_id

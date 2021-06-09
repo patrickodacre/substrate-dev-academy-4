@@ -54,6 +54,7 @@ impl frame_system::Config for Test {
     type SS58Prefix = SS58Prefix;
 }
 
+// Common pattern when you want to mock a global variable
 pub struct MockRandom;
 
 thread_local! {
@@ -65,6 +66,12 @@ impl Randomness<H256> for MockRandom {
         RANDOM_PAYLOAD.with(|v| *v.borrow())
     }
 }
+
+fn set_random(val: H256) {
+    RANDOM_PAYLOAD.with(|v| *v.borrow_mut() = val);
+}
+
+// end common pattern to mock global variable
 
 impl Config for Test {
     type Event = Event;
@@ -118,7 +125,7 @@ fn can_breed() {
     new_test_ext().execute_with(|| {
         assert_ok!(KittiesModule::create(Origin::signed(100)));
 
-        System::set_extrinsic_index(1);
+        set_random(H256::from([2; 32]));
 
         assert_ok!(KittiesModule::create(Origin::signed(100)));
 
@@ -138,7 +145,7 @@ fn can_breed() {
         assert_ok!(KittiesModule::breed(Origin::signed(100), 0, 1));
 
         let kitty = Kitty([
-            59, 254, 219, 122, 245, 239, 191, 125, 255, 239, 247, 247, 251, 239, 247, 254,
+            187, 250, 235, 118, 211, 247, 237, 253, 187, 239, 191, 185, 239, 171, 211, 122,
         ]);
 
         assert_eq!(KittiesModule::kitties(100, 2), Some(kitty.clone()));
